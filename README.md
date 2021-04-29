@@ -1,6 +1,6 @@
 # System Center Configuration Manager
 Some SCCM powershell scripts. 
-Sorry for shitcodes :)
+Sorry for shitcode.
 
 # Telegram community
 On Russian: https://t.me/ConfigMgr
