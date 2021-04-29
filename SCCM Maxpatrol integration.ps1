@@ -30,7 +30,7 @@ CD "$($SiteName):"
 # Import XML file
 (Get-Content $path2xml).Replace("<html:", "<html_").Replace("</html:", "</html_") | Out-File $path2xml
 #
-[xml]$f = gc $path2xml�-Encoding utf8
+[xml]$f = gc $path2xml -Encoding utf8
 $kbs = @()
 $f.workbook.Worksheet.Table.row | % {
 $list = @()
