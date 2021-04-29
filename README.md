@@ -4,4 +4,5 @@ Sorry for shitcodes :)
 
 # Telegram community
 On Russian: https://t.me/ConfigMgr
-On English: https://t.me/COnfigMgrEng
+
+On English: https://t.me/ConfigMgrEng
