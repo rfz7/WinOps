@@ -3,4 +3,5 @@ Some SCCM powershell scripts.
 Sorry for shitcodes :)
 
 # Telegram community
-https://t.me/ConfigMgr
+On Russian: https://t.me/ConfigMgr
+On English: https://t.me/COnfigMgrEng
