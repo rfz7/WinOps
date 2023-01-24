@@ -1,9 +1,4 @@
 ### 2019 
-# https://github.com/rfz7
-# https://t.me/panin
-# Integration SCCM and Maxpatrol
-# Интеграция SCCM и Maxpatrol
-###
 
 # Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 
