@@ -6,32 +6,32 @@
 $ErrorActionPreference = 'Stop'
 
 # Функция логирования
-Function Log {
+Function Write-Log {
     param (
         [string]$message
     )
     Write-Host "[LOG] $message"
 }
 
-Log "Запуск скрипта"
+Write-Log "Запуск скрипта"
 
 # WMI Variables
-$Namespace = 'ACustomNamespace'
+$Namespace = 'SBMT'
 $Class = 'Chrome_Extensions'
 
 # Функция создания пространства имен WMI
-Function CreateNamespace {
-    Log "Создание пространства имен: $Namespace"
+Function Create-Namespace {
+    Write-Log "Создание пространства имен: $Namespace"
     $rootNamespace = [wmiclass]'root:__namespace'
     $NewNamespace = $rootNamespace.CreateInstance()
     $NewNamespace.Name = $Namespace
     $NewNamespace.Put() | Out-Null
-    Log "Пространство имен создано"
+    Write-Log "Пространство имен создано"
 }
 
 # Функция создания класса WMI
-Function CreateClass {
-    Log "Создание класса: $Class"
+Function Create-Class {
+    Write-Log "Создание класса: $Class"
     $NewClass = New-Object System.Management.ManagementClass("root\$namespace", [string]::Empty, $null)
     $NewClass.name = $Class
     $NewClass.Qualifiers.Add("Static", $true)
@@ -45,7 +45,7 @@ Function CreateClass {
     $NewClass.Properties.Add("ScriptLastRan", [System.Management.CimType]::String, $false)
     $NewClass.Properties["Counter"].Qualifiers.Add("Key", $true)
     $NewClass.Put() | Out-Null
-    Log "Класс создан"
+    Write-Log "Класс создан"
 }
 
 # Функция парсинга JSON
@@ -54,7 +54,7 @@ Function Parse-Json {
         [Parameter(Mandatory = $true)]
         [string]$JsonString
     )
-    Log "Парсинг JSON: $JsonString"
+    Write-Log "Парсинг JSON: $JsonString"
     return $JsonString | ConvertFrom-Json
 }
 
@@ -99,7 +99,7 @@ Function Replace-MsgVariables {
         if ($MessageValue) {
             return $MessageValue
         } else {
-            Log "Не удалось найти значение для переменной: $Value"
+            Write-Log "Не удалось найти значение для переменной: $Value"
         }
     }
     return $Value
@@ -107,13 +107,13 @@ Function Replace-MsgVariables {
 
 # Функция получения и парсинга расширений Chrome
 Function Get-ChromeExtensions {
-    Log "Получение расширений Chrome"
+    Write-Log "Получение расширений Chrome"
     $Extensions = @()
     $Path = "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Extensions\"
     $ExtensionFiles = Get-ChildItem -Path $Path -Recurse -Filter "manifest.json" -ErrorAction SilentlyContinue
 
     foreach ($File in $ExtensionFiles) {
-        Log "Чтение файла: $File.FullName"
+        Write-Log "Чтение файла: $File.FullName"
         $JsonContent = Get-Content -Path $File.FullName -Raw -Encoding UTF8
         $Extension = Parse-Json -JsonString $JsonContent
 
@@ -131,44 +131,44 @@ Function Get-ChromeExtensions {
         $Extensions += $ExtensionData
     }
 
-    Log "Получено расширений: $($Extensions.Count)"
+    Write-Log "Получено расширений: $($Extensions.Count)"
     return $Extensions
 }
 
 # Проверка наличия пространства имен WMI и создание, если отсутствует
-Log "Проверка наличия пространства имен WMI"
+Write-Log "Проверка наличия пространства имен WMI"
 $NSfilter = "Name = '$Namespace'"
 $NSExist = Get-WmiObject -Namespace root -Class __namespace -Filter $NSfilter
 If ($NSExist -eq $null) {
-    Log "Пространство имен отсутствует, создаем новое"
-    CreateNamespace
+    Write-Log "Пространство имен отсутствует, создаем новое"
+    Create-Namespace
 }
 Else {
-    Log "Пространство имен существует"
+    Write-Log "Пространство имен существует"
 }
 
 # Проверка наличия класса WMI и создание, если отсутствует
-Log "Проверка наличия класса WMI"
+Write-Log "Проверка наличия класса WMI"
 $ClassExist = Get-CimClass -Namespace root/$Namespace -ClassName $Class -ErrorAction SilentlyContinue
 If ($ClassExist -eq $null) {
-    Log "Класс отсутствует, создаем новый"
-    CreateClass
+    Write-Log "Класс отсутствует, создаем новый"
+    Create-Class
 }
 Else {
-    Log "Класс существует, удаляем и создаем новый"
+    Write-Log "Класс существует, удаляем и создаем новый"
     Remove-WmiObject -Namespace root/$Namespace -Class $Class
-    CreateClass
+    Create-Class
 }
 
 # Получение расширений и сохранение в WMI
-Log "Получение и сохранение расширений в WMI"
+Write-Log "Получение и сохранение расширений в WMI"
 $Extensions = Get-ChromeExtensions
 
 # Переменная счетчика
 $j = 1
 
 foreach ($Extension in $Extensions) {
-    Log "Сохранение расширения: $($Extension.Name)"
+    Write-Log "Сохранение расширения: $($Extension.Name)"
     (Set-WmiInstance -Namespace root/$Namespace -Class $Class -Arguments @{
         Counter        = $j;
         Name           = $Extension.Name;
@@ -178,7 +178,7 @@ foreach ($Extension in $Extensions) {
         Version        = $Extension.Version;
         ScriptLastRan  = Get-Date
     })
-    $j = $j + 1
+    $j++
 }
 
-Log "Скрипт завершен"
+Write-Log "Скрипт завершен"
