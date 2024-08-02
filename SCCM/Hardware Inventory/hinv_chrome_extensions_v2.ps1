@@ -1,7 +1,3 @@
-<#
-    https://github.com/artemius1233
-#>
-
 # Включение вывода ошибок
 $ErrorActionPreference = 'Stop'
 

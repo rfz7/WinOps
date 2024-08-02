@@ -29,6 +29,9 @@
     Requirements:
         - Define $Namespace and $Class variables to match your environment
         - Must be run as an Administrator
+
+.FIX
+    Codepage: UTF-8
 #>
 
 # Ignore All Errors

@@ -1,5 +1,5 @@
 <#
-    User groups
+    Выгрузить группы пользователей в csv
 #>
 
 $Users = Get-ADUser -Filter { Enabled -eq $false -and name -notlike "svc.*" } -Properties *
