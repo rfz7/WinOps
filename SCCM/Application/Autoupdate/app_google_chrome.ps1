@@ -81,7 +81,7 @@ Get-CMApplicationDeployment -Name $appnamecr | Remove-CMApplicationDeployment -F
 Write-Output "Renaming and moving the old google chrome version"
 $app = Get-CMApplication -Name $appnamecr
 Set-CMApplication -InputObject $app -NewName "Google Chrome - $version"
-Move-CMObject -FolderPath "ABC:\Application\Auto updates\Old versions" -InputObject $app
+Move-CMObject -FolderPath "$($SiteCode):\Application\Auto updates\Old versions" -InputObject $app
 
 # Download new google chrome
 Write-Output "Downloading new google chrome version"
@@ -113,7 +113,7 @@ $logic2=$cla2.Setting.LogicalName
 Add-CMMsiDeploymentType -ApplicationName "$appnamecr" -ContentLocation "$destinationfolder\$filename" -DeploymentTypeName "Google Chrome - $webversion" -InstallationBehaviorType InstallForSystem -InstallCommand 'msiexec /i "googlechromestandaloneenterprise64.msi" /qn reboot=reallysuppress' -UserInteractionMode Hidden
 Set-CMMsiDeploymentType -ApplicationName $appnamecr -DeploymentTypeName "Google Chrome - $webversion" -AddDetectionClause $cla1,$cla2 -GroupDetectionClauses $logic1,$logic2 -DetectionClauseConnector @{LogicalName=$logic1;Connector="or"},@{LogicalName=$logic2;Connector="or"} -Force32BitDetectionScript $true
 $app = Get-CMApplication -Name $appnamecr
-Move-CMObject -FolderPath "ABC:\Application\Auto updates" -InputObject $app
+Move-CMObject -FolderPath "$($SiteCode):\Application\Auto updates" -InputObject $app
 
 # Add requirements
 $myGC = Get-CMGlobalCondition -Name "Disk space"
